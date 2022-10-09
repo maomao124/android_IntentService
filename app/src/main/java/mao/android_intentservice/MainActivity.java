@@ -2,11 +2,40 @@ package mao.android_intentservice;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.telecom.ConnectionService;
+import android.util.Log;
+import android.widget.Button;
+
+import mao.android_intentservice.service.MyIntentService;
 
 public class MainActivity extends AppCompatActivity
 {
+
+    private static final String TAG = "MainActivity";
+
+    private MyIntentService.MyBinder binder;
+
+    private final ServiceConnection serviceConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            Log.d(TAG, "onServiceConnected: ");
+            binder = (MyIntentService.MyBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            Log.d(TAG, "onServiceDisconnected: ");
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -30,8 +59,9 @@ public class MainActivity extends AppCompatActivity
         intent3.putExtra("param", "s3");
 
 
-        startService(intent1);
-        startService(intent2);
-        startService(intent3);
+        bindService(intent1, serviceConnection, BIND_AUTO_CREATE);
+        bindService(intent2, serviceConnection, BIND_AUTO_CREATE);
+        bindService(intent3, serviceConnection, BIND_AUTO_CREATE);
+
     }
 }

@@ -2,7 +2,7 @@ package mao.android_intentservice.service;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.Context;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -12,7 +12,48 @@ import androidx.annotation.Nullable;
 public class MyIntentService extends IntentService
 {
 
+    public interface OnServiceCompleteListener
+    {
+        void OnServiceComplete();
+    }
+
     private static final String TAG = "MyIntentService";
+
+    private int count = 0;
+
+    private final MyBinder myBinder = new MyBinder();
+
+    public class MyBinder extends Binder
+    {
+        public int getCount()
+        {
+            return count;
+        }
+
+
+        public void start(OnServiceCompleteListener l)
+        {
+            new Thread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    Log.d(TAG, "run: " + Thread.currentThread().getName());
+                    try
+                    {
+                        Thread.sleep(1000);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
+                    l.OnServiceComplete();
+                }
+            }).start();
+        }
+
+    }
+
 
     public MyIntentService()
     {
@@ -64,7 +105,7 @@ public class MyIntentService extends IntentService
     public IBinder onBind(Intent intent)
     {
         Log.d(TAG, "onBind: ");
-        return super.onBind(intent);
+        return myBinder;
     }
 
     @Override
