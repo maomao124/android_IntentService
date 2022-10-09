@@ -3,95 +3,89 @@ package mao.android_intentservice.service;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.os.IBinder;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 
 public class MyIntentService extends IntentService
 {
 
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "mao.android_intentservice.service.action.FOO";
-    private static final String ACTION_BAZ = "mao.android_intentservice.service.action.BAZ";
-
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "mao.android_intentservice.service.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "mao.android_intentservice.service.extra.PARAM2";
+    private static final String TAG = "MyIntentService";
 
     public MyIntentService()
     {
         super("MyIntentService");
     }
 
-    /**
-     * Starts this service to perform action Foo with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2)
-    {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
-    /**
-     * Starts this service to perform action Baz with the given parameters. If
-     * the service is already performing a task this action will be queued.
-     *
-     * @see IntentService
-     */
-    // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2)
-    {
-        Intent intent = new Intent(context, MyIntentService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
-        context.startService(intent);
-    }
-
     @Override
-    protected void onHandleIntent(Intent intent)
+    protected void onHandleIntent(@Nullable Intent intent)
     {
-        if (intent != null)
+        //Intent是从Activity发过来的，携带识别参数，根据参数不同执行不同的任务
+        if (intent == null)
         {
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action))
-            {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            }
-            else if (ACTION_BAZ.equals(action))
-            {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
-            }
+            return;
+        }
+        String action = intent.getExtras().getString("param");
+
+        if (action.equals("s1"))
+        {
+            Log.i(TAG, "启动service1");
+        }
+        else if (action.equals("s2"))
+        {
+            Log.i(TAG, "启动service2");
+        }
+        else if (action.equals("s3"))
+        {
+            Log.i(TAG, "启动service3");
+        }
+
+        try
+        {
+            Thread.sleep(3000);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2)
+    @Override
+    public void onCreate()
     {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+        super.onCreate();
+        Log.d(TAG, "onCreate: ");
     }
 
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2)
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent)
     {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+        Log.d(TAG, "onBind: ");
+        return super.onBind(intent);
+    }
+
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId)
+    {
+        Log.d(TAG, "onStartCommand: ");
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void setIntentRedelivery(boolean enabled)
+    {
+        super.setIntentRedelivery(enabled);
+        Log.d(TAG, "setIntentRedelivery: ");
+    }
+
+
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy: ");
     }
 }

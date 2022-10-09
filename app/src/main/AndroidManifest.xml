@@ -15,7 +15,9 @@
         <service
                 android:name=".service.MyIntentService"
                 android:exported="false">
-
+            <intent-filter>
+                <action android:name="mao.android_intentservice.service.MyIntentService" />
+            </intent-filter>
         </service>
 
         <activity
